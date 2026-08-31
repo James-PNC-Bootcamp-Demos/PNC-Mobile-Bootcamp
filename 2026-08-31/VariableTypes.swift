@@ -124,17 +124,18 @@ let transactionCount = 47          // Int
 let transactionTotal = 12_309.88   // Double
 
 // Try this line — it won't compile. Read the error.
-// let average = transactionTotal / transactionCount
+let average = transactionTotal / Double(transactionCount)
 
 // TODO 3b: Fix it by converting transactionCount to Double inline.
 // Store the result in a constant named averageTransaction.
-
+let averageTransaction = average
 
 // TODO 3c: Create a formatted string that reads:
 // "47 transactions averaging $261.91 each"
 // Use String(format: "%.2f", averageTransaction) to format the Double.
 // Store it in a constant named summary and print it.
-
+let summary = "\(transactionCount) transactions averaging $\(String(format: "%.2f", averageTransaction)) each"
+print(summary)
 
 // TODO 3d: Swift optionals — preview
 // This is a common pattern. String-to-Int conversion returns an
@@ -145,7 +146,9 @@ let parsedAmount = Int(rawInput)   // This is Int?, not Int
 // TODO: Use if let to safely unwrap parsedAmount and print:
 // "Parsed amount: 2500"
 // If it's nil, print: "Invalid input"
-
+if let userInput = parsedAmount {
+    print("Parsed amount: \(userInput)")
+}
 
 // ============================================================
 // EXERCISE 4: Control Flow
