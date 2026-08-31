@@ -168,7 +168,15 @@ let balance: Double = 8_500.00
 //   balance > 10_000  → print "Preferred client"
 //   balance > 1_000   → print "Standard account"
 //   otherwise         → print "Low balance alert"
-
+if balance > 25_000 {
+    print("Private Banking eligible")
+} else if balance > 10_000 {
+    print("Preferred client")
+}else if balance > 1_000 {
+    print("Standard account")
+} else {
+    print("Low balance alert")
+}
 
 // TODO 4b: Switch with pattern matching
 // Swift switch can match ranges — far more powerful than Python/JS
@@ -182,6 +190,22 @@ let creditScore = 714
 //   default    → "Poor"
 // Print "Credit rating: [result]"
 
+let creditScoreResult: String
+
+switch creditScore {
+    case 800...850:
+        creditScoreResult = "Exceptional"
+    case 740...799:
+        creditScoreResult = "Very Good"
+    case 670...739:
+        creditScoreResult = "Good"
+    case 580...669:
+        creditScoreResult = "Fair"
+    default:
+        creditScoreResult = "Poor"
+}
+
+print("Credit Rating: \(creditScoreResult)")
 
 // TODO 4c: Switch on an "enum"
 // For now, use a String:
@@ -193,6 +217,16 @@ let transactionType = "transfer"
 //   "transfer"   → "Processing transfer"
 //   default      → "Unknown transaction type: \(transactionType)"
 // Print the result.
+switch transactionType {
+    case "deposit":
+        print("Processing deposit")
+    case "withdrawal":
+        print("Processing withdrawal")
+    case "transfer":
+        print("Processing transfer")
+    default:
+        print("Unknown transaction type: \(transactionType)")
+}
 
 
 // TODO 4d: Guard statement
@@ -202,15 +236,20 @@ let transactionType = "transfer"
 //   guard condition else { return / throw / break }
 //   // execution continues here only if condition was true
 
+
 func processWithdrawal(amount: Double, availableBalance: Double) -> String {
     // TODO: Add a guard statement that returns "Invalid amount"
     // if amount is less than or equal to zero.
-
+    guard amount > 0 else {
+        return "Invalid amount"
+    }
     // TODO: Add a second guard that returns
     // "Insufficient funds. Available: $X.XX"
     // if amount exceeds availableBalance.
     // Use String(format: "%.2f", availableBalance) for the dollar format.
-
+    guard amount < availableBalance else {
+        return "Insufficient funds. Available: $\(String(format: "%.2f", availableBalance))"
+    }
     return "Withdrawal of $\(String(format: "%.2f", amount)) approved"
 }
 
