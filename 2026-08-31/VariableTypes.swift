@@ -1,4 +1,4 @@
-// ============================================================
+print("Hello, World!")// ============================================================
 // MODULE 4: Swift Programming Fundamentals
 // Exercises — Types, Variables, and Control Flow
 // Enterprise Mobile Application Development Bootcamp
@@ -38,22 +38,23 @@ import Foundation
 // TODO 1a: Declare a constant named appName with the value "PNC Mobile".
 // Use let. Try assigning a new value to it afterward — read the error,
 // then remove the bad assignment.
-
+let appName = "PNC Mobile"
 
 // TODO 1b: Declare a variable named loginAttempts and set it to 0.
 // Then increment it by 1 on the next line using +=
-
+var loginAttempts = 0
+loginAttempts += 1
 
 // TODO 1c: Declare a constant named accountBalance of type Double
 // with value 4_250.75
 // (Note: Swift lets you use _ as a thousands separator for readability)
-
+var accountBalance: Double = 4_250.75
 
 // TODO 1d: Swift uses TYPE INFERENCE — it figures out the type from
 // the value. But sometimes you must be explicit.
 // Declare a variable named interestRate with explicit type annotation
 // Double, and assign it 0.035
-
+var interestRate: Double = 0.035
 
 // CHECK: Print all four values using print(). Run the playground.
 // Expected output (roughly):
@@ -61,7 +62,10 @@ import Foundation
 //   1
 //   4250.75
 //   0.035
-
+print(appName)
+print(loginAttempts)
+print(accountBalance)
+print(interestRate)
 
 // ============================================================
 // EXERCISE 2: Working with Strings
@@ -73,32 +77,35 @@ import Foundation
 // ============================================================
 
 // TODO 2a: Declare constants firstName = "Jane" and lastName = "Smith"
-
+let firstName = "Jane"
+let lastName = "Smith"
 
 // TODO 2b: Using string interpolation, create a constant fullName
 // that combines them with a space between.
 // Format: "Jane Smith"
-
+let fullName = firstName + " " + lastName
 
 // TODO 2c: Create a constant greeting that produces:
 // "Welcome to PNC Mobile, Jane Smith. Your account is active."
 // Use interpolation — do not use string concatenation with +
-
+let greeting = "Welcome to PNC Mobile, \(fullName). Your account is active."
 
 // TODO 2d: Declare a constant accountNumber = "1234567890"
 // Use String methods to create a masked version showing only the last 4 digits.
 // Hint: String(accountNumber.suffix(4)) gives you "7890"
 // Your masked version should be "****7890"
 // Store it in a constant named maskedAccount
-
+let accountNumber = "1234567890"
+let maskedAccount = "****" + String(accountNumber.suffix(4))
 
 // TODO 2e: Using the string properties available on Swift strings,
 // print the number of characters in fullName.
 // Hint: .count
-
+print(fullName.count)
 
 // CHECK: Print greeting and maskedAccount. Verify output matches expectations.
-
+print(greeting)
+print(maskedAccount)
 
 // ============================================================
 // EXERCISE 3: Type Safety and Conversion
