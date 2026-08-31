@@ -270,12 +270,17 @@ print(processWithdrawal(amount: 500, availableBalance: 1000))       // Approved
 // TODO 5a: for-in over a range
 // Print the multiplication table for 7: "7 x 1 = 7" through "7 x 10 = 70"
 // Use a closed range: 1...10
-
+for num in 1...10 {
+    let result = (7 * num)
+    print("7 x \(num) = \(result)")
+}
 
 // TODO 5b: for-in with where clause (built-in filter)
 // Print only the even numbers from 1 through 20.
 // Use: for num in 1...20 where num % 2 == 0
-
+for num in 1...20 where num % 2 == 0 {
+    print(num)
+}
 
 // TODO 5c: Array basics
 // Declare an array of account names:
@@ -284,7 +289,11 @@ print(processWithdrawal(amount: 500, availableBalance: 1000))       // Approved
 // "• Checking"
 // "• Savings"
 // etc.
+let accountNames = ["Checking", "Savings", "Investment", "Credit Card"]
 
+for account in accountNames {
+    print("* \(account)")
+}
 
 // TODO 5d: Array with enumerated()
 // Using the same array, print each item with its position number:
@@ -293,7 +302,9 @@ print(processWithdrawal(amount: 500, availableBalance: 1000))       // Approved
 // etc.
 // Hint: for (index, name) in accounts.enumerated()
 // Note: enumerated() starts at 0 — add 1 to the index when printing.
-
+for (index, account) in accountNames.enumerated() {
+    print("\(index + 1). \(account)")
+}
 
 // TODO 5e: while loop
 // Simulate a connection retry loop.
@@ -302,7 +313,18 @@ print(processWithdrawal(amount: 500, availableBalance: 1000))       // Approved
 //   - increment attempts
 //   - print "Connection attempt \(attempts)..."
 //   - if attempts == 3, set connected = true and print "Connected."
+var attempts = 0
+var connected = false
 
+while !connected && attempts < 3 {
+    attempts += 1
+    print("Connection attempt \(attempts)...")
+
+    if attempts == 3 {
+        connected = true
+        print("Connected")
+    }
+}
 
 // ============================================================
 // REVIEW QUESTIONS
@@ -310,9 +332,13 @@ print(processWithdrawal(amount: 500, availableBalance: 1000))       // Approved
 //
 // BEFORE YOU LEAVE TODAY:
 // 1. Can you explain WHY Swift requires explicit type conversion?
+// Swift requires explicit type conversion because the errors will be more likely to show as compile time errors instead of logic time errors, which are much more time intensive and insidious to fix.
 // 2. What is the difference between let and var?
+// Let creates a constant and var creates a variable. Let cannot be changed once set.
 // 3. When would you use guard instead of if?
+// When you want to reduce potential code nesting and increase readability by handling potential issues in a function. For example, checking to see if a string is actually a string, or is null.
 // 4. What makes Swift's switch statement different from Python's
 //    match statement or JavaScript's switch?
+// In Swift, each case must be handled. In Python, you do not need to cover every potential case until it errors at runtime. Additionally, the switch statement does not fall through by default.
 //
 // ============================================================
