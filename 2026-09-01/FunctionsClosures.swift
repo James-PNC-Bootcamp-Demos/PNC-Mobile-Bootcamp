@@ -1,3 +1,5 @@
+// Printed and pushed to the repo for my own records
+
 // ============================================================
 // MODULE 4: Swift Programming Fundamentals
 // Exercises — Functions, Closures, and OOP in Swift
@@ -114,6 +116,7 @@ func validateTransfer(amount: Double, availableBalance: Double) -> (isValid: Boo
 
     return (true, nil)
 }
+
 print(validateTransfer(amount: 300, availableBalance: 3))
 print(validateTransfer(amount: -324, availableBalance: 199))
 print(validateTransfer(amount: 300, availableBalance: 1000))
@@ -135,6 +138,10 @@ print(validateTransfer(amount: 300, availableBalance: 1000))
 // Create a closure named square that takes an Int and returns Int: $0 * $0
 // Print square(7)    → 49
 // Print square(12)   → 144
+let square: (Int) -> Int = {$0 * $0}
+
+print(square(7))
+print(square(12))
 
 
 // TODO 2b: Higher-order functions — map, filter, reduce
@@ -144,13 +151,16 @@ let balances = [3_250.00, 12_000.00, 450.75, 8_900.00, 125.50, 22_450.00]
 // TODO: Use .filter to get only balances above 5_000.00
 // Store result in highBalances and print it.
 
+print(balances.filter{$0 > 5_000})
 // TODO: Use .map to multiply each balance by 1.035 (apply 3.5% interest)
 // Store result in balancesWithInterest and print it.
-
+let balancesWithInterest = balances.map{$0 * 1.035}
+print(balancesWithInterest)
 // TODO: Use .reduce to get the total of all balances
 // Hint: balances.reduce(0) { $0 + $1 }  or  balances.reduce(0, +)
 // Store result in totalBalance and print it formatted as currency.
-
+let totalBalance = balances.reduce(0) {$0 + $1}
+print(String(format: "$%.2f", totalBalance))
 
 // TODO 2c: Sorting with closures
 // You have this array of transaction amounts (some negative = debits):
@@ -159,7 +169,8 @@ let amounts = [250.00, -45.67, 1_200.00, -890.00, 75.00, -12.50, 3_400.00]
 // Sort by absolute value, ascending. Store in sortedBySize.
 // Hint: .sorted { abs($0) < abs($1) }
 // Print sortedBySize.
-
+let sortedBySize = amounts.sorted{abs($0) < abs($1)}
+print(sortedBySize)
 
 // TODO 2d: Chaining higher-order functions
 // Using the balances array above, in a single chain:
@@ -167,7 +178,10 @@ let amounts = [250.00, -45.67, 1_200.00, -890.00, 75.00, -12.50, 3_400.00]
 //   2. Map each to add 3.5% interest
 //   3. Reduce to get the total
 // Store in premiumTotal and print it.
-
+let premiumTotal = balances.filter{$0 > 1_000}
+                            .map{$0 * 1.035}
+                            .reduce(0) {$0 + $1}
+print(premiumTotal)
 
 // TODO 2e: Closure that captures its environment
 // Write a function named makeAccountLogger that takes a String accountId
@@ -179,3 +193,12 @@ let amounts = [250.00, -45.67, 1_200.00, -890.00, 75.00, -12.50, 3_400.00]
 //   let checkingLog = makeAccountLogger(accountId: "ACC-001")
 //   checkingLog("Deposit received")    → "[ACC-001] EVENT: Deposit received"
 //   checkingLog("Balance checked")     → "[ACC-001] EVENT: Balance checked"
+func makeAccountLogger (accountId: String) -> (String) -> Void {
+    return { message in
+        print("[\(accountId)] EVENT: [\(message)]")
+    }
+}
+
+let checkingLog = makeAccountLogger(accountId: "ACC-001")
+checkingLog("Deposit received")
+checkingLog("Balance checked")
