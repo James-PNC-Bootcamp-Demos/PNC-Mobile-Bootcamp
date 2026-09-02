@@ -110,12 +110,49 @@ print(t2.isPending)
 //     deposit(amount: Double) — adds to balance if amount > 0
 //     withdraw(amount: Double) -> Bool — subtracts if amount > 0 and <= balance; returns success
 //     printSummary() — prints "Account [accountNumber] | Owner: [owner] | Balance: $X.XX"
+class BankAccount {
+    let id: String
+    let accountNumber: String
+    let owner: String
+    var balance: Double
 
+    init(id: String, accountNumber: String, initialBalance: Double = 0.0, owner: String){
+        self.id = id
+        self.accountNumber = accountNumber
+        self.balance = initialBalance
+        self.owner = owner
+    }
+
+    func deposit(amount: Double) {
+        guard amount > 0 else {
+            return
+        }
+
+        balance += amount
+    }
+
+    func withdraw(amount: Double) -> Bool {
+        guard amount > 0 && amount <= balance else{
+            return false
+        }
+
+        balance -= amount
+        return true
+    }
+
+    func printSummary() {
+        print("Account [\(self.accountNumber)] | Owner: [\(self.owner)] | Balance: \(String(format: "$%.2f", balance))")
+    }
+}
 
 // TODO 4b: Create two BankAccount instances:
 //   checking: id "acc_001", accountNumber "1234567890", owner "Jane Smith", balance 1_000.00
 //   savings:  id "acc_002", accountNumber "0987654321", owner "Jane Smith", balance 5_000.00
 // Call deposit and withdraw on checking. Print summaries for both.
+let checking = BankAccount(id: "acc_001", accountNumber: "1234567890", initialBalance: 1_000.00, owner: "Jane Smith")
+checking.printSummary()
+let savings = BankAccount(id: "acc_002", accountNumber: "0987654321", initialBalance: 5_000.00, owner: "Jane Smith")
+savings.printSummary()
 
 
 // TODO 4c: Prove reference semantics
@@ -124,6 +161,12 @@ print(t2.isPending)
 // Print checking.balance and checkingRef.balance.
 // Observe they are THE SAME object — both show the updated balance.
 // Write a comment explaining why this is different from the struct in 3c.
+let checkingRef = checking
+checkingRef.deposit(amount: 500)
+print(checking.balance)
+print(checkingRef.balance) 
+// This is different from the struct because it is a reference to a shared object instead of an entirely new data structure. The struct is a value type and this is a reference type.
+// This means that changes on one variable pointing to this area in memory affects all other references to this as well.
 
 
 // TODO 4d: Inheritance
@@ -138,6 +181,31 @@ print(t2.isPending)
 // Withdraw 400 — should succeed (draws on overdraft).
 // Withdraw 800 — should fail (exceeds balance + overdraftLimit).
 
+// class PremiumBankAccount : BankAccount {
+//     let overdraftLimit: Double
+
+
+//     // i have no earthly idea how to make a convenience initializer take the same params as bank account and have been trying for an hour
+//     // will leave it as it is and ask about it tomorrow
+//     init (overdraftLimit: Double){
+//         self.overdraftLimit = overdraftLimit
+//         super.init((id: String, accountNumber: String, initialBalance: Double = 0.0, owner: String))
+//     }
+
+//     override func withdraw(amount: Double) -> Bool {
+//         guard amount > 0 && amount <= balance + overdraftLimit else{
+//             return false
+//         }
+
+//         balance -= amount
+//         return true
+//     }
+// }
+
+// let premiumAccount = PremiumBankAccount (id: "234", accountNumber: "2324532", initialBalance: 100, owner: "Richard", overdraftLimit: 500)
+
+// print(premiumAccount.withdraw(amount: 400))
+// print(premiumAccount.withdraw(amount: 800))
 
 // ============================================================
 // EXERCISE: Enumerations
@@ -153,7 +221,9 @@ print(t2.isPending)
 //   credit, debit, transfer, fee
 // Make it conform to String and CaseIterable:
 //   enum TransactionType: String, CaseIterable
-
+enum TransactionType: String, CaseIterable {
+    
+}
 
 // TODO 5b: Add a computed property displayName: String to TransactionType
 // using a switch that returns:
