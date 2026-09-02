@@ -222,7 +222,23 @@ print(checkingRef.balance)
 // Make it conform to String and CaseIterable:
 //   enum TransactionType: String, CaseIterable
 enum TransactionType: String, CaseIterable {
-    
+    case credit
+    case debit
+    case transfer
+    case fee
+
+    var displayName: String {
+        switch self {
+            case .credit:
+                return "Credit"
+            case .debit:
+                return "Debit"
+            case .transfer:
+                return "Transfer"
+            case .fee:
+                return "Fee"
+        }
+    }
 }
 
 // TODO 5b: Add a computed property displayName: String to TransactionType
@@ -239,12 +255,35 @@ enum TransactionType: String, CaseIterable {
 //   accountInactive
 //   dailyLimitExceeded(limit: Double)
 //   invalidAmount
-//
+
+enum AccountError {
+    case insufficientFunds(available: Double, requested: Double)
+    case accountInactive
+    case dailyLimitExceeded(limit: Double)
+    case invalidAmount
+
+    func describeError(_ error: AccountError) -> String {
+        switch self {
+            case .insufficientFunds(let available):
+                return "Insufficient funds. Available: \(available)"
+            case .accountInactive:
+                return "Account is inactive"
+            case .dailyLimitExceeded(let limit):
+                return "Daily limit exceeded. \(limit)"
+            case .invalidAmount:
+                return "Invalid amount."
+        }
+    }
+}
 // Write a function describeError(_ error: AccountError) -> String
 // that uses a switch with associated value binding to return
 // a user-friendly message for each case.
 // Test it with all four cases.
 
+let case1 = AccountError.insufficientFunds
+let case2 = AccountError.accountInactive
+let case3 = AccountError.dailyLimitExceeded
+let case4 = invalidAmount
 
 // TODO 5d: Iterate over all cases
 // Using CaseIterable on TransactionType, print all transaction types
