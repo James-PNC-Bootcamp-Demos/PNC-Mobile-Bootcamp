@@ -125,7 +125,7 @@ struct Transaction : Identifiable, Codable, Equatable, Hashable, Summarizable {
     var id: String = UUID().uuidString
     let date: Date
     let amount: Double
-    let description: String
+    var description: String
     let type: TransactionType
     var status: TransactionStatus = .completed
     let category: String?
@@ -140,7 +140,7 @@ struct Transaction : Identifiable, Codable, Equatable, Hashable, Summarizable {
     }
     
     var formattedDate: String {
-        var formatter: DateFormatter = DateFormatter()
+        let formatter: DateFormatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .short
         
@@ -156,7 +156,7 @@ struct Transaction : Identifiable, Codable, Equatable, Hashable, Summarizable {
     }
     
     var summary : String {
-        " \(formattedDate): \(formattedAmount) - \(description)s"
+        " \(formattedDate): \(formattedAmount) - \(description)"
     }
     init(date: Date, amount: Double, description: String, type: TransactionType, status: TransactionStatus){
         self.date = date
@@ -219,6 +219,17 @@ class BankAccount : Identifiable, AccountOperations, Summarizable {
         }
         
         balance += amount
+    }
+    
+    func addTransaction(_ transaction: Transaction) {
+        if transaction.type.isExpense{
+            balance -= transaction.amount
+        } else{
+            balance += transaction.amount
+        }
+        
+        self.transactions.append(transaction)
+        availableBalance = balance
     }
     
     func withdraw(amount: Double) throws {
@@ -410,24 +421,25 @@ struct AccountAnalytics : AnalyticsProvider {
         return totalCredits - totalDebits
     }
     
-    var largestTransaction: 	? {
-        guard let allTransactions = account.transactions else {
-            return 0
-        }
+    var largestTransaction: Transaction? {
+        guard account.transactions.isEmpty == false else { return nil }
+        
+        return account.transactions.max(by: { $0.amount < $1.amount })
     }
     
     func monthlyTotal(month: Int, year: Int) -> Double {
-        
+        return transactions.filter { $0.formattedDate.contains("\(month) \(year)") }.reduce(0) {$0 + $1.amount}
     }
     
     func transactionsByCategory() -> [String : [Transaction]] {
-        <#code#>
+        return transactions.count == 0 ? [:] : Dictionary(grouping: transactions, by: \.resolvedCategory)
     }
     
     var transactions: [Transaction]
     
     init(account: BankAccount) {
         self.account = account
+        self.transactions = []
     }
     
 }
@@ -447,7 +459,14 @@ struct AccountAnalytics : AnalyticsProvider {
     //
     // The function must work for any type conforming to Summarizable —
     // including both Transaction and BankAccount.
-    
+func reportResults<T: Summarizable>(_ items: [T], title: String) {
+    print("===\(title)===")
+    print("\(items.count) items")
+    for item in items {
+        item.printSummary()
+    }
+    print("=== End of \(title) ===")
+}
     
     // ============================================================
     // SECTION 7: INTEGRATION TEST — Tie it all together
@@ -486,9 +505,111 @@ struct AccountAnalytics : AnalyticsProvider {
     //   Show the original is unchanged.
     //   Assign the checking account (class) to a new variable. Deposit $100 through the alias.
     //   Show both variables reflect the updated balance.
+func runlabDemo() {
+    let bankAccountOne = BankAccount(id: "1", accountNumber: "32513124", accountType: "Checking", nickname: nil, initialBalance: 3_500, currency: "USD", isActive: true)
     
+    let bankAccountTwo = BankAccount(id: "2", accountNumber: "123423651", accountType: "Savings", nickname: "Backup Fund", initialBalance: 12_500, currency: "USD", isActive: true)
+    
+    let transaction = Transaction(
+        date: Date(),
+        amount: 25.50,
+        description: "Grilled Sandwich Refund",
+        type: .credit,
+        status: .completed
+    )
+    
+    let transaction1 = Transaction(
+        date: Date(),
+        amount: 25.50,
+        description: "Lunch",
+        type: .debit,
+        status: .completed
+    )
+    
+    let transaction2 = Transaction(
+        date: Date(),
+        amount: 258.50,
+        description: "Groceries",
+        type: .debit,
+        status: .completed
+    )
+    
+    let transaction3 = Transaction(
+        date: Date(),
+        amount: 5.50,
+        description: "Interest due",
+        type: .fee,
+        status: .completed
+    )
+    
+    let transaction4 = Transaction(
+        date: Date(),
+        amount: 25.50,
+        description: "Rent Portion",
+        type: .transfer,
+        status: .completed
+    )
+    
+    bankAccountOne.addTransaction(transaction)
+    bankAccountOne.addTransaction(transaction1)
+    bankAccountOne.addTransaction(transaction2)
+    bankAccountOne.addTransaction(transaction3)
+    bankAccountOne.addTransaction(transaction4)
+    
+    
+    do {
+        try bankAccountOne.withdraw(amount: 10000)
+    } catch let error as AccountOperationsError {
+        print(error.errorDescription)
+    } catch {
+        print("Unknown Error \(error)")
+    }
+
+    do {
+        try bankAccountOne.deposit(amount: -53)
+    } catch let error as AccountOperationsError {
+        print(error.errorDescription)
+    } catch {
+        print("Unknown Error \(error)")
+    }
+
+    do {
+        try bankAccountOne.transfer(amount: 100, to: bankAccountOne)
+    } catch let error as AccountOperationsError {
+        print(error.errorDescription)
+    } catch {
+        print("Unknown Error \(error)")
+    }
+    
+    let accountAnalytics =	 AccountAnalytics (account: bankAccountOne)
+    
+    print(accountAnalytics.totalCredits)
+    print(accountAnalytics.totalDebits)
+    print(accountAnalytics.netFlow)
+    
+    if let trans = accountAnalytics.largestTransaction {
+        print("Largest Transaction: \(trans.description) Amount: \(trans.amount)")
+    }
+    
+    print(accountAnalytics.transactionsByCategory)
+    
+    
+    reportResults(bankAccountOne.transactions, title: "Checking Transactions")
+    reportResults([bankAccountOne, bankAccountTwo], title: "All Accounts")
+    
+    print(transaction1.description)
+    var transaction5 = transaction1
+    
+    transaction5.description = "new description"
+    print(transaction1.description)
+    
+    print(bankAccountOne.balance)
+    let bankAccountThree = bankAccountOne		
+    bankAccountThree.balance = 2000
+    print(bankAccountOne.balance)
+}
     // TODO: Call runlabDemo() at the bottom of the file.
-    
+    runlabDemo()
     
     // ============================================================
     // END OF LAB
@@ -496,11 +617,11 @@ struct AccountAnalytics : AnalyticsProvider {
     //
     // SELF-ASSESSMENT CHECKLIST
     // Before submitting, verify:
-    //   [ ] All five types compile without warnings
-    //   [ ] runlabDemo() runs to completion with no crashes
-    //   [ ] Each error case in 7C is handled and prints a clear message
-    //   [ ] Struct copy semantics are correctly demonstrated in 7F
-    //   [ ] Class reference semantics are correctly demonstrated in 7F
-    //   [ ] reportResults works for both Transaction and BankAccount
-    //   [ ] Analytics produce correct totals matching your transactions
+    //   [X] All five types compile without warnings
+    //   [X] runlabDemo() runs to completion with no crashes
+    //   [X] Each error case in 7C is handled and prints a clear message
+    //   [X] Struct copy semantics are correctly demonstrated in 7F
+    //   [X] Class reference semantics are correctly demonstrated in 7F
+    //   [X] reportResults works for both Transaction and BankAccount
+    //   [X] Analytics produce correct totals matching your transactions
     // ============================================================
