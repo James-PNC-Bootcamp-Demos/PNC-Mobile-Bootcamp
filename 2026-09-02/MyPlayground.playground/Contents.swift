@@ -463,9 +463,15 @@ func executeTransfer(amount: Double, fromBalance: Double, toAccountId: String,
 // Use a do-catch block that handles each specific TransferError case.
 // For each case, print the localized error description.
 do {
-    executeTransfer(amount: -324, fromBalance: 300, toAccountId: "3214", dailyUsed: 0, dailyLimit: 302)
-    executeTransfer(amount: 400, fromBalance: 600, toAccountId: "", dailyUsed: 30, dailyLimit: 3000)
-} catch {
+    try executeTransfer(amount: -324, fromBalance: 300, toAccountId: "3214", dailyUsed: 0, dailyLimit: 302)
+    try executeTransfer(amount: 400, fromBalance: 600, toAccountId: "", dailyUsed: 30, dailyLimit: 3000)
+    try executeTransfer(amount: 4000, fromBalance: 600, toAccountId: "1234", dailyUsed: 30, dailyLimit: 30000)
+    try executeTransfer(amount: 400, fromBalance: 600, toAccountId: "1234", dailyUsed: 300, dailyLimit: 30)
+    try executeTransfer(amount: 400, fromBalance: 600, toAccountId: "ERR_NET", dailyUsed: 300, dailyLimit: 30000)
+} catch  let e as TransferError {
+    if let description = e.errorDescription {
+        print(description)
+    }
     
 }
 
@@ -479,7 +485,11 @@ do {
 // Print result using nil coalescing: result ?? "Transfer failed"
 //
 // Demonstrate both outcomes (success and failure).
+let result = try? executeTransfer(amount: -324, fromBalance: 300, toAccountId: "3214", dailyUsed: 0, dailyLimit: 302)
+print(result ?? "Transfer failed")
 
+let goodResult = try? executeTransfer(amount: 400, fromBalance: 600, toAccountId: "1234", dailyUsed: 30, dailyLimit: 30000)
+print(goodResult ?? "Transfer failed")
 
 // ============================================================
 // PART E: GENERICS — INTRODUCTION
@@ -499,7 +509,14 @@ do {
 // that takes an array of any type T and prints the first element,
 // or "Array is empty" if it has no elements.
 // Test with: [Int], [String], [Double]
-
+func printFirst<T> (arr: [T]){
+    guard arr.count > 0 else {
+        print("Array is empty")
+        return
+    }
+    
+    print(arr.first)
+}
 
 // TODO 6b: Generic Stack
 // Implement a generic value type Stack<Element>:
@@ -509,19 +526,65 @@ do {
 //   - var top: Element?                  (returns last element without removing)
 //   - var isEmpty: Bool
 //   - var count: Int
+
+struct Stack<Element> {
+    var items: [Element] = []
+    
+    mutating func push(_ item: Element) {
+        items.append(item)
+        count += 1
+    }
+    
+    mutating func pop() -> Element?{
+        let lastItem = items.last
+        
+        items.removeLast()
+        count -= 1
+        return lastItem
+    }
+    
+    var top: Element? {
+        return items.last
+    }
+    
+    var isEmpty: Bool
+    
+    var count: Int
+}
 //
 // Test with a Stack<Double> (a transaction amount history):
 //   Push: 250.00, 45.67, 1200.00
 //   Pop one off: should return 1200.00
 //   Print top: should be 45.67
 //   Print count: should be 2
+var doubleStack = Stack<Double>(isEmpty: false, count: 0)
 
+doubleStack.push(250)
+doubleStack.push(45.67)
+doubleStack.push(1200)
+doubleStack.pop()
+print(doubleStack.top)
+print(doubleStack.count)
 
 // TODO 6c: Generic function with constraint
 // Write a function named findLargest<T: Comparable>
 // that takes [T] and returns the largest element, or nil if empty.
 // Test with: [Int], [Double], [String]
 // Hint: collection.max()
+func findLargest<T: Comparable>(arr: [T]) -> T? {
+    guard !arr.isEmpty else {
+        return nil
+    }
+    return arr.max()
+}
+
+let ints = [1, 5, 3, 4, 2]
+let doubles = [2.0, 24, 3252.32]
+let strings = ["Orange", "Apple", "Banana"]
+
+findLargest(arr: ints)
+findLargest(arr: doubles)
+findLargest(arr: strings)
 
 
 // ============================================================
@@ -534,8 +597,14 @@ do {
 //
 // FINAL REFLECTION:
 // 1. What is a retain cycle? Draw it. How do you break one?
+// A retain cycle is a cycle of strong references that keep an object alive in memory indefinitely.
+// Object1 ---> Object 2 ----> Object1, ect.
+// You break it by giving an object a weak reference, usually the most dependent one.
 // 2. What is the difference between try, try?, and try!?
+// try: Try to do this and catch an error. try?: Try to do this and catch an error, but it might be nil. try?!: Try to do this and catch an error, it might be nil, but I know better than you and it won't be so don't yell at me about it!
 // 3. When would you use a protocol instead of a base class?
+// When you want to give shared functionality to items of different types. For dependency inversion.
 // 4. What constraint do you add to a generic type parameter
 //    when you need to compare or sort elements?
+// Comparable
 // ============================================================
