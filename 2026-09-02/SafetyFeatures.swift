@@ -69,7 +69,7 @@ struct Transaction : Displayable {
     let isDebit: Bool
     var isPending: Bool = false
     let displayDescription: String = ""
-		
+        
     var formattedAmount: String {
         if isDebit{
             return String(format: "-$%.2f", abs(amount))
